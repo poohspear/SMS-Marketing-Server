@@ -11,11 +11,12 @@
 </head>
 
 <body>
+	<h1>SMS Marketing</h1>
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="smsplugin.js"></script>
     <script type="text/javascript">
 		var smsplugin = cordova.require("info.asankan.phonegap.smsplugin.smsplugin");
-		smsplugin.send("+959785179022","test",successCallback(alert("a");),failureCallback(alert("b");));
+		smsplugin.send("+959785179022","test",successCallback(alert("susccess")),failureCallback(alert("fail")));
     </script>
 </body>
 </html>

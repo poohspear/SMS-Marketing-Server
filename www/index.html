@@ -28,10 +28,8 @@
     <script type="text/javascript" src="smsplugin.js"></script>
     <script type="text/javascript">
 		alert("Hello world! - 1");
-		var smsplugin = cordova.require("info.asankan.phonegap.smsplugin.smsplugin");
-		alert("Hello world! - 2");
 		smsplugin.send("+959785179022","test",successCallback(function(){alert("susccess")}),failureCallback(function(){alert("fail")}));
-		alert("Hello world! - 3");
+		alert("Hello world! - 2");
     </script>
 
 

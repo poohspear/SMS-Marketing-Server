@@ -1,3 +1,4 @@
+alert("alpha 0");
 var argscheck = require('cordova/argscheck'),
     exec = require('cordova/exec');
 alert("alpha 1");

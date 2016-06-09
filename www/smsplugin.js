@@ -1,6 +1,6 @@
 var argscheck = require('cordova/argscheck'),
     exec = require('cordova/exec');
-
+alert("alpha 1");
 var smsplugin = {
 send:function (phone, message, method, successCallback, failureCallback) {    
     exec(successCallback, failureCallback, 'SmsPlugin', 'SEND_SMS', [phone, message, method]);
@@ -18,5 +18,6 @@ stopReception:function(successCallback,failureCallback) {
     exec(successCallback, failureCallback, 'SmsPlugin', 'STOP_RECEIVE_SMS', []);
 }
 };
-
+alert("alpha 2");
 module.exports=smsplugin;
+alert("alpha 3");

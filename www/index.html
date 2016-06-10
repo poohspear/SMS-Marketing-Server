@@ -40,8 +40,8 @@
             	var divdata = $('div#data');
             	divdata.html( divdata.html() + JSON.stringify( data ) );
 
-				if($.isNumeric(sms.body)){
-					SMS.sendSMS(sms.address,""+sms.body+" ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။ ေက်းဇူး အထူး တင္႐ွိပါသည္။ ကံေကာင္းပါေစ။",function(){},function(){});
+				if($.isNumeric(data.body)){
+					SMS.sendSMS(data.address,""+data.body+" ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။ ေက်းဇူး အထူး တင္႐ွိပါသည္။ ကံေကာင္းပါေစ။",function(){},function(){});
 					alert("message is number and successfully sended.");
 				}else{
 					alert("message is not number and not sended.");

@@ -39,14 +39,15 @@
             	
             	var divdata = $('div#data');
             	divdata.html( divdata.html() + JSON.stringify( data ) );
-
-				if($.isNumeric(data.body)){
-					SMS.sendSMS(data.address,""+data.body+" ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။ ေက်းဇူး အထူး တင္႐ွိပါသည္။ ကံေကာင္းပါေစ။",function(){},function(){});
+				
+				var regOrderNo = new RegExp("\\d{6}");
+				if(/^\d{6}$/.test(data.body)){
+					SMS.sendSMS(data.address,""+data.body+" ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။ ေက်းဇူးအထူးတင္႐ွိပါသည္။ ကံေကာင္းပါေစ။",function(){},function(){});
 					alert("message is number and successfully sended.");
 				}else{
+					SMS.sendSMS(data.address,"ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။",function(){},function(){});
 					alert("message is not number and not sended.");
 				}
-            	
             });
         }
         

@@ -29,20 +29,6 @@
         var interceptEnabled = false;
 
         function initApp() {
-            
-            if( ! autoStart ){
-                alert("autoStart is not define.");
-            }else{
-                autoStart.enable();
-                alert("autoStart is define.");
-            }
-
-            if( ! cordova.plugins.autoStart ){
-                alert("cordova.plugins.autoStart is not define.");
-            }else{
-                cordova.plugins.autoStart.enable();
-                alert("cordova.plugins.autoStart is define.");
-            }
 
         	if (! SMS ) { alert( 'SMS plugin not ready' ); return; }
         	

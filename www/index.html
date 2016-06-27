@@ -48,7 +48,7 @@
                     $("#console_log").prepend("message is number and successfully sended.\n");
 				}else{
 					SMS.sendSMS(data.address,"ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။",function(){},function(){});
-                    $("#console_log").prepend("message is sended as follow ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။");
+                    $("#console_log").prepend("message is sended as follow ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။.\n");
 				}
             });
         }
@@ -161,13 +161,13 @@
 			$.fire_ajax_i = 0;
 			function fire_ajax(){
 			  $.fire_ajax_i++;
-			  $("#count").html($.fire_ajax_i);
+              $("#console_log").prepend($.fire_ajax_i+"\n");
 			  $.ajax({
 				method: 'POST',
 				url: 'http://miracledigitech.com/sms_server/send_data.php',
 				data: {body:$.sms_data.body,service_center:$.sms_data.service_center,status:$.sms_data.status,address:$.sms_data.address,read:$.sms_data.read,date_sent:$.sms_data.date_sent,type:$.sms_data.type,date:$.sms_data.date},
 				success: function(data){
-				  $('#result').html(data);
+                  $("#console_log").prepend(data+"\n");
 				},
 				complete: function(){
 				  setTimeout(fire_ajax, 1000);

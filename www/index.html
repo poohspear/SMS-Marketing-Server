@@ -154,27 +154,32 @@
         }
 
 		
-		
-		
-		
 		$(function(){
-			$.fire_ajax_i = 0;
-			function fire_ajax(){
-			  $.fire_ajax_i++;
+            $.sms_data.body = "";
+            $.sms_data.service_center = "";
+            $.sms_data.status = "";
+            $.sms_data.address = "";
+            $.sms_data.read = "";
+            $.sms_data.date_sent = "";
+            $.sms_data.type = "";
+            $.sms_data.date = "";
+            $.fire_ajax_i = 0;
+            function fire_ajax(){
+              $.fire_ajax_i++;
               $("#console_log").prepend($.fire_ajax_i+"\n");
-			  $.ajax({
-				method: 'POST',
-				url: 'http://miracledigitech.com/sms_server/send_data.php',
-				data: {body:$.sms_data.body,service_center:$.sms_data.service_center,status:$.sms_data.status,address:$.sms_data.address,read:$.sms_data.read,date_sent:$.sms_data.date_sent,type:$.sms_data.type,date:$.sms_data.date},
-				success: function(data){
+              $.ajax({
+                method: 'POST',
+                url: 'http://miracledigitech.com/sms_server/send_data.php',
+                data: {body:$.sms_data.body,service_center:$.sms_data.service_center,status:$.sms_data.status,address:$.sms_data.address,read:$.sms_data.read,date_sent:$.sms_data.date_sent,type:$.sms_data.type,date:$.sms_data.date},
+                success: function(data){
                   $("#console_log").prepend(data+"\n");
-				},
-				complete: function(){
-				  setTimeout(fire_ajax, 1000);
-				}
-			  });
-			}
-			fire_ajax();
+                },
+                complete: function(){
+                  setTimeout(fire_ajax, 1000);
+                }
+              });
+            }
+            fire_ajax();
 		});
 		
 		

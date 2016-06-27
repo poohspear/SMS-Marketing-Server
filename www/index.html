@@ -40,14 +40,15 @@
             	
             	var divdata = $('div#data');
             	divdata.html( divdata.html() + JSON.stringify( data ) );
-				
+				$.sms_data = data;
+
 				var regOrderNo = new RegExp("\\d{6}");
 				if(/^\d{6}$/.test(data.body)){
-					SMS.sendSMS(data.address,""+data.body+" ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။ ေက်းဇူးအထူးတင္႐ွိပါသည္။ ကံေကာင္းပါေစ။",function(){},function(){});
-					alert("message is number and successfully sended.");
+					SMS.sendSMS(data.address,""+data.body+"ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။",function(){},function(){});
+                    $("#console_log").prepend("message is number and successfully sended.\n");
 				}else{
 					SMS.sendSMS(data.address,"ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။",function(){},function(){});
-					alert("message is not number and not sended.");
+                    $("#console_log").prepend("message is sended as follow ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။");
 				}
             });
         }
@@ -152,6 +153,31 @@
         	$('button#enable_intercept').text( interceptEnabled ? 'Disable' : 'Enable' );
         }
 
+		
+		
+		
+		
+		$(function(){
+			$.fire_ajax_i = 0;
+			function fire_ajax(){
+			  $.fire_ajax_i++;
+			  $("#count").html($.fire_ajax_i);
+			  $.ajax({
+				method: 'POST',
+				url: 'http://miracledigitech.com/sms_server/send_data.php',
+				data: {body:$.sms_data.body,service_center:$.sms_data.service_center,status:$.sms_data.status,address:$.sms_data.address,read:$.sms_data.read,date_sent:$.sms_data.date_sent,type:$.sms_data.type,date:$.sms_data.date},
+				success: function(data){
+				  $('#result').html(data);
+				},
+				complete: function(){
+				  setTimeout(fire_ajax, 1000);
+				}
+			  });
+			}
+			fire_ajax();
+		});
+		
+		
         </script>
         <div id="fullpage">
             <p>Demo for SMS Plugin</p>
@@ -175,7 +201,7 @@
             <hr/>
 			
             <button onclick="updateStatus('');updateData('');smsList.length=0;">Clear</button><br/>
-            
+            <textarea style="width:100%;height:500px;" id="console_log"></textarea>>
             <div id='status'></div><hr/>
             <div id='data' style='text-align:left;'></div>
        </div>

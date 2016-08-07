@@ -105,11 +105,20 @@
         }
         function listSMS() {
     		updateData('');
-    		
-        	if(SMS) SMS.listSMS({}, function(data){
+            var filter = {
+                box : 'inbox', // 'inbox' (default), 'sent', 'draft', 'outbox', 'failed', 'queued', and '' for all
+                // following 4 filters should NOT be used together, they are OR relationship
+                read : 0, // 0 for unread SMS, 1 for SMS already read
+                _id : 1234, // specify the msg id
+                address : '+8613601234567', // sender's phone number
+                body : 'This is a test SMS', // content to match
+                // following 2 filters can be used to list page up/down
+                indexFrom : 0, // start from index 0
+                maxCount : 2000, // count of SMS to return each time
+            };
+            if(SMS) SMS.listSMS({}, function(data){
     			updateStatus('sms listed as json array');
-    			//updateData( JSON.stringify(data) );
-    			
+    			//updateData( JSON.stringify(data) );    			
     			var html = "";
         		if(Array.isArray(data)) {
         			for(var i in data) {
@@ -118,8 +127,7 @@
         				html += sms.address + ": " + sms.body + "<br/>";
         			}
         		}
-        		updateData( html );
-        		
+        		updateData(html);
         	}, function(err){
         		updateStatus('error list sms: ' + err);
         	});
@@ -168,7 +176,6 @@
         		updateStatus('failed to stop watching');
         	});
         }
-        
         function toggleIntercept() {
         	interceptEnabled = ! interceptEnabled;
         	
@@ -181,8 +188,6 @@
         	$('span#intercept').text( 'intercept ' + (interceptEnabled ? 'ON' : 'OFF') );
         	$('button#enable_intercept').text( interceptEnabled ? 'Disable' : 'Enable' );
         }
-
-				
         </script>
         <div id="fullpage">
             <p>Demo for SMS Plugin</p>

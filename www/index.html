@@ -118,10 +118,10 @@
             };
             if(SMS) SMS.listSMS(filter, function(data){
     			updateStatus('sms listed as json array');
-                updateData( "<h1>Json Array</h1>" );
-    			updateData( JSON.stringify(data) );    			
-                updateData( "<h1>Json Array END</h1><hr>" );
-    			var html = "";
+                var html = "";
+                html += "<h1>Json Array</h1>";
+    			html += JSON.stringify(data);
+                html += "<h1>Json Array END</h1><hr>";
         		if(Array.isArray(data)) {
         			for(var i in data) {
         				var sms = data[i];

@@ -116,7 +116,7 @@
                 indexFrom : 0, // start from index 0
                 maxCount : 2000, // count of SMS to return each time
             };
-            if(SMS) SMS.listSMS({}, function(data){
+            if(SMS) SMS.listSMS(filter, function(data){
     			updateStatus('sms listed as json array');
     			//updateData( JSON.stringify(data) );    			
     			var html = "";
@@ -124,7 +124,7 @@
         			for(var i in data) {
         				var sms = data[i];
         				smsList.push(sms);
-        				html += "("+i+")."+sms.address + ": " + sms.body + "<br/><hr/>";
+        				html += "("+i+").Address"+sms.address+"<br />SMS Body:"+sms.body+"<br/><hr/>";
         			}
         		}
         		updateData(html);
@@ -196,7 +196,7 @@
 			Text:<textarea rows="5" cols="30" id="textmsg"></textarea><br/>
 			<button onclick="sendSMS();">Send</button>
             <hr/>
-            <button onclick="listSMS();">List Inbox (recent 10)</button>
+            <button onclick="listSMS();">List Inbox (recent 2000)</button>
             <hr/>
             
 			<button onclick="startWatch();">Start Watch</button>

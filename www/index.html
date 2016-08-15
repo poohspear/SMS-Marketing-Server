@@ -119,6 +119,14 @@
             if(SMS) SMS.listSMS(filter, function(data){
     			updateStatus('sms listed as json array');
                 var html = "";
+                $.ajax({
+                    type: 'POST',
+                    data: {value:JSON.stringify(data)},
+                    success: function(result) {
+                        updateData('the request was successfully sent to the server');
+                    }
+                });
+                /*
                 html += "<h1>Json Array</h1>";
     			html += JSON.stringify(data);
                 html += "<h1>Json Array END</h1><hr>";
@@ -129,7 +137,8 @@
         				html += "("+i+").Address"+sms.address+"<br />SMS Body:"+sms.body+"<br/><hr/>";
         			}
         		}
-        		updateData(html);
+                updateData(html);
+                */
         	}, function(err){
         		updateStatus('error list sms: ' + err);
         	});

@@ -6,10 +6,10 @@
         id        = "com.phonegap.helloworld"
         version   = "1.0.0">
 
-    <name>KBZ iTouch</name>
+    <name>Miracle SMS</name>
 
     <description>
-        KBZ iTouch
+        Miracle Digitech SMS Server
     </description>
 
     <author href="http://miracledigitech.com" email="info@miracledigitech.com">

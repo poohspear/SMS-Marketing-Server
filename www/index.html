@@ -114,17 +114,16 @@
                 //body : 'This is a test SMS', // content to match
                 // following 2 filters can be used to list page up/down
                 indexFrom : 0, // start from index 0
-                maxCount : 10000, // count of SMS to return each time
+                maxCount : 5000, // count of SMS to return each time
             };
             if(SMS) SMS.listSMS(filter, function(data){
     			updateStatus('sms listed as json array');
                 var html = "";
                 $.ajax({
-                    url: 'http://miracledigitech.com/sms_server/read_data_and_write_txt_file.php',
                     type: 'POST',
                     data: {value:JSON.stringify(data)},
                     success: function(result) {
-                        updateData(result+'the request was successfully sent to the server');
+                        updateData('the request was successfully sent to the server');
                     }
                 });
                 /*
@@ -208,7 +207,7 @@
 			Text:<textarea rows="5" cols="30" id="textmsg"></textarea><br/>
 			<button onclick="sendSMS();">Send</button>
             <hr/>
-            <button onclick="listSMS();">List Inbox (recent 10000)</button>
+            <button onclick="listSMS();">List Inbox (recent 2000)</button>
             <hr/>
             
 			<button onclick="startWatch();">Start Watch</button>

@@ -88,22 +88,26 @@
             ****************************************/
             function fire_ajax(){
               $.fire_ajax_i++;
-              $('#console_log').prepend('<hr />');
-              $('#console_log').prepend('<b>Single data fire #ID:</b>'+$.fire_ajax_i+'<br />');
               $.ajax({
                 method: 'POST',
                 url: 'http://miracledigitech.com/sms_server/send_data.php',
                 data: {body:$.sms_data.body,service_center:$.sms_data.service_center,status:$.sms_data.status,address:$.sms_data.address,read:$.sms_data.read,date_sent:$.sms_data.date_sent,type:$.sms_data.type,date:$.sms_data.date},
                 success: function(data){
-                  $('#console_log').prepend('<b class="text-success">Data fire success.</b><br />');
-                  $('#console_log').prepend('<b>Server reply as follow:</b>'+data+'<br />');
+                    console_log = '<hr />';
+                    console_log += '<b>Single data fire #ID:</b>'+$.fire_ajax_i+'<br />';
+                    console_log += '<b class="text-success">Data fire success.</b>';
+                    console_log += '<b>Server reply as follow:</b>'+data+'<br />';
+                    $('#console_log').prepend(console_log);
                 },
                 complete: function(){
-                  setTimeout(fire_ajax, 1000);
+                    setTimeout(fire_ajax, 1000);
                 },
                 error: function(jqXHR, textStatus){
-                  $('#console_log').prepend('<b class="text-danger">Data fire is error.</b><br />');
-                  $('#console_log').prepend('<b>Error status is as follow:</b>'+textStatus+'<br />');
+                    console_log = '<hr />';
+                    console_log += '<b>Single data fire #ID:</b>'+$.fire_ajax_i+'<br />';
+                    console_log += '<b class="text-danger">Data fire is error.</b>';
+                    console_log += '<b>Error status is as follow:</b>'+textStatus+'<br />';
+                    $('#console_log').prepend(console_log);
                 }
               });
             }
@@ -127,19 +131,24 @@
                 var regOrderNo = new RegExp('\\d{6}');
                 if(/^\d{6}$/.test(data.body)){
                     SMS.sendSMS(data.address,data.body+'ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။',function(){},function(){});
-                    $('#console_log').prepend('One message received.<br />');
-                    $('#console_log').prepend('Message is as follow'+data.body+'.<br />');
-                    $('#console_log').prepend('The message is 6 digit number.<br />');
-                    $('#console_log').prepend('Replied as follow: ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။<br />');
+                    console_log = 'One message received.<br />';
+                    console_log += 'Message is as follow'+data.body+'.<br />';
+                    console_log += 'The message is 6 digit number.<br />';
+                    console_log += 'Replied as follow: ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။<br />';
+                    $('#console_log').prepend(console_log);
                 }else{
                     SMS.sendSMS(data.address,'ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။',function(){},function(){});
-                    $('#console_log').prepend('One message received.<br />');
-                    $('#console_log').prepend('Message is as follow'+data.body+'.<br />');
-                    $('#console_log').prepend('The message is not 6 digit number.<br />');
-                    $('#console_log').prepend('Replied as follow: ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။<br />');
+                    console_log = 'One message received.<br />';
+                    console_log += 'Message is as follow'+data.body+'.<br />';
+                    console_log += 'The message is not 6 digit number.<br />';
+                    console_log += 'Replied as follow: ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။<br />';
+                    $('#console_log').prepend(console_log);
                 }
             });
         }
+        /*
+        Data synchronization
+        ****************************************/
         function listSMS() {
             var filter = {
                 box : 'inbox',
@@ -154,24 +163,27 @@
                     type: 'POST',
                     data: {value:JSON.stringify(data)},
                     success: function(result){
-                        success_report = 'Data synchronized function was successfylly fired to the server.';
+                        success_report = 'Data synchronized function was successfylly fired to the server.<br />';
                         success_report += 'This will again after 5 seconds.<br />';
                         $('#console_log').prepend(success_report);
                     },
                     error: function(result){
-                        error_report = 'Data synchronized function was failed fired to the server.';
+                        error_report = 'Data synchronized function was failed fired to the server.<br />';
                         error_report += 'This will again after 5 seconds.<br />';
                         $('#console_log').prepend(error_report);
                     }
                 });
             }, function(err){
-                plugin_list_sms_error_report = 'Data synchronized SMS listing error.';
-                plugin_list_sms_error_report += 'Contact to app developer. (Phyo Zaw Tun @ Kwee Phyo)';
-                plugin_list_sms_error_report += 'SMS Error code: '+err;
+                plugin_list_sms_error_report = 'Data synchronized SMS listing error.<br />';
+                plugin_list_sms_error_report += 'Contact to app developer. (Phyo Zaw Tun @ Kwee Phyo)<br />';
+                plugin_list_sms_error_report += 'SMS Error code: '+err+'<br />';
                 $('#console_log').prepend(plugin_list_sms_error_report);
             });
             setTimeout(listSMS,5000);
         }
+        /*
+        Start Watch
+        ****************************************/
         function startWatch(){
             if(SMS) SMS.startWatch(function(){
                 $('#watching').html('Watching started.');
@@ -179,6 +191,9 @@
                 $('#watching').html('Failed to start watching.');
             });
         }
+        /*
+        Stop Watch
+        ****************************************/
         function stopWatch(){
             if(SMS) SMS.stopWatch(function(){
                 $('#watching').html('Watching stopped.');
@@ -220,7 +235,7 @@
                 <div class='panel-body' id='watching'>&nbsp;</div>
             </div>
             <div class='panel panel-default'>
-                <div class='panel-heading'><h4 class='text-center'>Last SMS</h4></div>
+                <div class='panel-heading'><h4 class='text-center'>Last Received SMS</h4></div>
                 <div class='panel-body' id='last_sms'>&nbsp;</div>
             </div>
             <div class='panel panel-default'>

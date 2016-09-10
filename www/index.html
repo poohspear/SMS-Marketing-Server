@@ -1,144 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
     <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <meta name='viewport' content='user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width' />
         <title>SMS Marketing Server</title>
-        <link href="./css/bootstrap.min.css" rel="stylesheet">
+        <link href='./css/bootstrap.min.css' rel='stylesheet'>
         <!-- jQuery -->
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="./jquery.js"></script>
+        <script type='text/javascript' src='cordova.js'></script>
+        <script type='text/javascript' src='./jquery.js'></script>
         <!-- Bootstrap JavaScript -->
-        <script type="text/javascript" src="./js/bootstrap.min.js"></script>
-        <script>
-        function onLoad() {
-            if(( /(ipad|iphone|ipod|android)/i.test(navigator.userAgent) )) {
-                document.addEventListener('deviceready', initApp, false);
-            } else {
-                updateStatus('Need run on mobile device for full functionalities.');
-            }
-        }
-        // we will restore the intercepted SMS here, for later restore
-        var smsList = [];
-        var interceptEnabled = false;
-
-        function initApp() {
-            $.sms_data=[];
-            $.sms_data.body = "";
-            $.sms_data.service_center = "";
-            $.sms_data.status = "";
-            $.sms_data.address = "";
-            $.sms_data.read = "";
-            $.sms_data.date_sent = "";
-            $.sms_data.type = "";
-            $.sms_data.date = "";
-            $.fire_ajax_i = 0;
-            function fire_ajax(){
-              $.fire_ajax_i++;
-              $("#console_log").prepend("Single data fire #ID:"+$.fire_ajax_i+"");
-              $.ajax({
-                method: 'POST',
-                url: 'http://miracledigitech.com/sms_server/send_data.php',
-                data: {body:$.sms_data.body,service_center:$.sms_data.service_center,status:$.sms_data.status,address:$.sms_data.address,read:$.sms_data.read,date_sent:$.sms_data.date_sent,type:$.sms_data.type,date:$.sms_data.date},
-                success: function(data){
-                  $("#console_log").prepend("Data fire success. Server reply as follow:"data+"\n");
-                },
-                complete: function(){
-                  setTimeout(fire_ajax, 1000);
-                },
-                error: function(jqXHR, textStatus){
-                  $("#console_log").prepend("Data fire is error. Error status is as follow:"textStatus+"\n");
-                }
-              });
-            }
-            fire_ajax();
-            if (! SMS ) { alert( 'SMS plugin not ready' ); return; }
-            document.addEventListener('onSMSArrive', function(e){
-                var data = e.data;
-                smsList.push( data );
-                updateStatus('SMS arrived, count: ' + smsList.length );
-                var divdata = $('#data');
-                divdata.html( divdata.html() + JSON.stringify( data ) );
-                $.sms_data = data;
-                var regOrderNo = new RegExp("\\d{6}");
-                if(/^\d{6}$/.test(data.body)){
-                    SMS.sendSMS(data.address,""+data.body+"ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။",function(){},function(){});
-                    $("#console_log").prepend("One message received. Message is as follow"+data.body+". The message is 6 digit number. Replied as follow: ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။\n");
-                }else{
-                    SMS.sendSMS(data.address,"ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။",function(){},function(){});
-                    $("#console_log").prepend("One message received. Message is as follow"+data.body+". The message is not 6 digit number. Replied as follow: ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။\n");
-                }
-            });
-        }
-        function update( id, str ) {
-            $('#'+id).html( str );
-        }
-        function updateStatus( str ) {
-            $('#status').html( str );
-        }
-        function updateData( str ) {
-            $('#data').html( str );
-        }
-        function listSMS() {
-            updateData('');
-            var filter = {
-                box : 'inbox', // 'inbox' (default), 'sent', 'draft', 'outbox', 'failed', 'queued', and '' for all
-                // following 4 filters should NOT be used together, they are OR relationship
-                //read : 0, // 0 for unread SMS, 1 for SMS already read
-                //_id : 1234, // specify the msg id
-                //address : '+8613601234567', // sender's phone number
-                //body : 'This is a test SMS', // content to match
-                // following 2 filters can be used to list page up/down
-                indexFrom : 0, // start from index 0
-                maxCount : 100000, // count of SMS to return each time
-            };
-            if(SMS) SMS.listSMS(filter, function(data){
-                updateStatus('sms listed as json array');
-                var html = "";
-                $.ajax({
-                    url: 'http://miracledigitech.com/sms_server/read_data_and_write_txt_file.php',
-                    type: 'POST',
-                    data: {value:JSON.stringify(data)},
-                    success: function(result){
-                        updateData('The JSON page of ALL SMS request was successfully synchronized to the server');
-                    }
-                });
-                /*
-                html += "<h1>Json Array</h1>";
-                html += JSON.stringify(data);
-                html += "<h1>Json Array END</h1><hr>";
-                if(Array.isArray(data)) {
-                    for(var i in data) {
-                        var sms = data[i];
-                        smsList.push(sms);
-                        html += "("+i+").Address"+sms.address+"<br />SMS Body:"+sms.body+"<br/><hr/>";
-                    }
-                }
-                updateData(html);
-                */
-            }, function(err){
-                updateStatus('error list sms: ' + err);
-            });
-            $("#console_log").prepend("Data synchronized function is fired after 5 seconds."+"\n");
-            setTimeout(listSMS, 5000);
-        }
-        function startWatch() {
-            if(SMS) SMS.startWatch(function(){
-                update('watching', 'watching started');
-            }, function(){
-                updateStatus('failed to start watching');
-            });
-        }
-        function stopWatch() {
-            if(SMS) SMS.stopWatch(function(){
-                update('watching', 'watching stopped');
-            }, function(){
-                updateStatus('failed to stop watching');
-            });
-        }
-        </script>
+        <script type='text/javascript' src='./js/bootstrap.min.js'></script>
         <style>
+            body {
+                background: url('./img/body_bg.jpg'); 
+            }
+            #banner {
+                max-height: 200px;
+            }
             .sms-btn {
                 background-color: #337ab7 !important;
                 color: #fff !important;
@@ -150,61 +29,210 @@
             .sms-btn i {
                 width: 30px;
             }
+            .list-group ,
+            .panel-body .list-group .list-group-item,
+            .panel {
+                background: rgba(0,0,0,0) !important;
+            }
+            .panel-heading,
+            .list-group-item-header {
+                background: rgba(0,0,0,.2) !important;
+                color: #fff;
+            }
+            .panel-body {
+                background: rgba(255,255,255,.1) !important;
+                color: #000;
+            }
+            footer {
+                padding: 30px 0 30px 0;
+            }
+            footer p {
+                line-height: 35px ;
+            }
         </style>
+        <script>
+        function onLoad() {
+            if(( /(ipad|iphone|ipod|android)/i.test(navigator.userAgent) )) {
+                document.addEventListener('deviceready', initApp, false);
+            } else {
+                $('#console_log').('Need run on mobile device for full functionalities.');
+            }
+        }
+        // we will restore the intercepted SMS here, for later restore
+        var smsList = [];
+        var interceptEnabled = false;
+
+        function initApp() {
+            $.sms_data=[];
+            $.sms_data.body = '';
+            $.sms_data.service_center = '';
+            $.sms_data.status = '';
+            $.sms_data.address = '';
+            $.sms_data.read = '';
+            $.sms_data.date_sent = '';
+            $.sms_data.type = '';
+            $.sms_data.date = '';
+            $.fire_ajax_i = 0;
+            /*
+            Single data fire function
+            ****************************************/
+            if(!SMS){
+                alert('SMS plugin is not ready');
+                $('#console_log').('SMS plugin is not ready');
+                return;
+            }
+            /*
+            Single data fire function
+            ****************************************/
+            function fire_ajax(){
+              $.fire_ajax_i++;
+              $('#console_log').prepend('Single data fire #ID:'+$.fire_ajax_i+'');
+              $.ajax({
+                method: 'POST',
+                url: 'http://miracledigitech.com/sms_server/send_data.php',
+                data: {body:$.sms_data.body,service_center:$.sms_data.service_center,status:$.sms_data.status,address:$.sms_data.address,read:$.sms_data.read,date_sent:$.sms_data.date_sent,type:$.sms_data.type,date:$.sms_data.date},
+                success: function(data){
+                  $('#console_log').prepend('Data fire success. Server reply as follow:'data+'\n');
+                },
+                complete: function(){
+                  setTimeout(fire_ajax, 1000);
+                },
+                error: function(jqXHR, textStatus){
+                  $('#console_log').prepend('Data fire is error. Error status is as follow:'textStatus+'\n');
+                }
+              });
+            }
+            fire_ajax();
+            /*
+            Single data fire function
+            ****************************************/
+            document.addEventListener('onSMSArrive', function(e){
+                var data = e.data;
+                smsList.push(data);
+                $.sms_data = data;
+                $('#console_log').prepend('One SMS arrived\nSMS No: '+smsList.length+'\n');
+                $('#console_log').prepend('SMS in JSON format: '+JSON.stringify( data )+'\n');
+                last_sms = '    <ul class="list-group">';
+                last_sms += '        <li class="list-group-item">Body: '+data.body+'</li>';
+                last_sms += '        <li class="list-group-item">Service center: '+data.service_center+'</li>';
+                last_sms += '        <li class="list-group-item">Send from: '+data.address+'</li>';
+                last_sms += '    </ul>';
+                $('#last_sms').html(last_sms)
+                var regOrderNo = new RegExp('\\d{6}');
+                if(/^\d{6}$/.test(data.body)){
+                    SMS.sendSMS(data.address,''+data.body+'ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။',function(){},function(){});
+                    console_log = 'One message received.\n';
+                    console_log += 'Message is as follow'+data.body+'.\n';
+                    console_log += 'The message is 6 digit number.\n';
+                    console_log += 'Replied as follow: ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။\n';
+                    $('#console_log').prepend();
+                }else{
+                    SMS.sendSMS(data.address,'ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။',function(){},function(){});
+                    console_log = 'One message received.\n';
+                    console_log += 'Message is as follow'+data.body+'.\n';
+                    console_log += 'The message is not 6 digit number.\n';
+                    console_log += 'Replied as follow: ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။\n';
+                    $('#console_log').prepend(console_log);
+                }
+            });
+        }
+        function listSMS() {
+            var filter = {
+                box : 'inbox',
+                indexFrom : 0,
+                maxCount : 100
+            };
+            if(SMS)SMS.listSMS(filter, function(data){
+                $('#console_log').prepend('Recent 500 SMS is synchronizing to server.');
+                var html = '';
+                $.ajax({
+                    url: 'http://miracledigitech.com/sms_server/read_data_and_write_txt_file.php',
+                    type: 'POST',
+                    data: {value:JSON.stringify(data)},
+                    success: function(result){
+                        success_report = 'Data synchronized function was successfylly fired to the server.';
+                        success_report += 'This will again after 5 seconds.\n';
+                        $('#console_log').prepend(success_report);
+                    },
+                    error: function(result){
+                        error_report = 'Data synchronized function was failed fired to the server.';
+                        error_report += 'This will again after 5 seconds.\n';
+                        $('#console_log').prepend(error_report);
+                    }
+                });
+            }, function(err){
+                plugin_list_sms_error_report = 'Data synchronized SMS listing error.';
+                plugin_list_sms_error_report += 'Contact to app developer. (Phyo Zaw Tun @ Kwee Phyo)';
+                plugin_list_sms_error_report += 'SMS Error code: '+err;
+                $('#console_log').prepend(plugin_list_sms_error_report);
+            });
+            setTimeout(listSMS,5000);
+        }
+        function startWatch(){
+            if(SMS) SMS.startWatch(function(){
+                $('watching').html('Watching started.');
+            }, function(){
+                $('watching').html('Failed to start watching.');
+            });
+        }
+        function stopWatch(){
+            if(SMS) SMS.stopWatch(function(){
+                $('watching').html('Watching stopped.');
+            }, function(){
+                $('watching').html('failed to stop watching');
+            });
+        }
+        </script>
     </head>
-    <body onload="onLoad()">
-        <div class="container">
-            <div class="col-xs-12 col-sm-6 col-sm-offset-3">
-                <h1 class="text-center">Miracle SMS Server</h1>
-                <div class="list-group">
-                    <div class="list-group-item">
-                        <h4 class="text-center">Miracle Control Bar</h4>
-                        <h5 class="text-center">ေမွာ္ဆန္ေသာ ထိန္းခ်ဳပ္မႈ ခလုပ္မ်ား</h5>
-                    </div>
-                    <button type="button" class="list-group-item sms-btn" onclick="listSMS();">
-                        <i class="glyphicon glyphicon-sort"></i>
-                        Data synchronization (recent 500)
-                    </button>
-                    <button type="button" class="list-group-item sms-btn" onclick="startWatch();">
-                        <i class="glyphicon glyphicon-play"></i>
-                        Start Watch
-                    </button>
-                    <button type="button" class="list-group-item sms-btn" onclick="stopWatch();">
-                        <i class="glyphicon glyphicon-stop"></i>
-                        Stop Watch
-                    </button>
-                    <button type="button" class="list-group-item sms-btn" onclick="updateStatus('');updateData('');smsList.length=0;$('#console_log').html('');">
-                        <i class="glyphicon glyphicon-erase"></i>
-                        Clear
-                    </button>
+    <body onload='onLoad()'>
+        <div class='col-xs-12 col-sm-6 col-sm-offset-3' id='banner'>
+            <img class='img-responsive' style='margin:auto;' src="./img/banner_img.png">
+        </div>
+        <div class='col-xs-12 col-sm-6 col-sm-offset-3'>
+            <div class='list-group'>
+                <div class='list-group-item list-group-item-header'>
+                    <h4 class='text-center'>Miracle Control Bar</h4>
+                    <h5 class='text-center'>ေမွာ္ဆန္ေသာ ထိန္းခ်ဳပ္မႈ ခလုပ္မ်ား</h5>
                 </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">Watching Status</div>
-                    <div class="panel-body" id='watching'>&nbsp;</div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">Realtime Status </div>
-                    <textarea class="panel-body" id="console_log" disabled="disabled" row="5" style="width:100%;border:none;overflow:auto;resize:none;height:30em;"></textarea>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">Data status</div>
-                    <div class="panel-body" id='data'></div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">Server Situation Status</div>
-                    <div class="panel-body" id='status'></div>
-                </div>
-                <foooter>
-                    <p class="text-center">
-                        Powered by Miracle Digitech.<br /><br />
-                        <img src="miracle_logo.png" style="max-width:150px;"/><br /><br />
-                        Made with love 
-                        <i class="glyphicon glyphicon-heart-empty" style="color:#c73031;"></i> in sunny 
-                        <i class="glyphicon glyphicon-sunglasses" style="color:#c73031;"></i> Yangon.
-                        <br /><br /><br />
-                    </p>
-                </foooter>
+                <button type='button' class='list-group-item sms-btn' onclick='listSMS();'>
+                    <i class='glyphicon glyphicon-sort'></i>
+                    Data synchronization (recent 500)
+                </button>
+                <button type='button' class='list-group-item sms-btn' onclick='startWatch();'>
+                    <i class='glyphicon glyphicon-play'></i>
+                    SMS Start Watch
+                </button>
+                <button type='button' class='list-group-item sms-btn' onclick='stopWatch();'>
+                    <i class='glyphicon glyphicon-stop'></i>
+                    SMS Stop Watch
+                </button>
+                <button type='button' class='list-group-item sms-btn' onclick="smsList.length=0;$('#console_log').html('');">
+                    <i class='glyphicon glyphicon-erase'></i>
+                    Clear SMS Server Realtime Report
+                </button>
             </div>
+            <div class='panel panel-default'>
+                <div class='panel-heading'><h5 class='text-center'>SMS Watching Status</h5></div>
+                <div class='panel-body' id='watching'>&nbsp;</div>
+            </div>
+            <div class='panel panel-default'>
+                <div class='panel-heading'><h5 class='text-center'>Last SMS</h5></div>
+                <div class='panel-body' id='last_sms'>&nbsp;</div>
+            </div>
+            <div class='panel panel-default'>
+                <div class='panel-heading'><h5 class='text-center'>SMS Server Realtime Report</h5></div>
+                <div class='panel-body' id='console_log' disabled='disabled' row='5' style='overflow:auto;resize:none;max-height:15em;'>&nbsp;</div>
+            </div>
+            <footer>
+                <p class='text-center'>
+                    <img src='./img/miracle_logo.png' style='max-width:150px;'/><br />
+                    Powered by Miracle Digitech.<br />
+                    Made with love 
+                    <i class='glyphicon glyphicon-heart-empty' style='color:#c73031;'></i> in sunny 
+                    <i class='glyphicon glyphicon-sunglasses' style='color:#c73031;'></i> Yangon.
+                    <br />
+                </p>
+            </footer>
         </div>
     </body>
 </html>

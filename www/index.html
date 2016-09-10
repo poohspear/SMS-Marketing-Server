@@ -39,7 +39,7 @@
             .panel-heading,
             .list-group-item-header {
                 background: rgba(0,0,0,.2) !important;
-                color: #fff;
+                color: #fff !important;
             }
             .panel-body {
                 background: rgba(255,255,255,.1) !important;
@@ -94,13 +94,13 @@
                 url: 'http://miracledigitech.com/sms_server/send_data.php',
                 data: {body:$.sms_data.body,service_center:$.sms_data.service_center,status:$.sms_data.status,address:$.sms_data.address,read:$.sms_data.read,date_sent:$.sms_data.date_sent,type:$.sms_data.type,date:$.sms_data.date},
                 success: function(data){
-                  $('#console_log').prepend('Data fire success. Server reply as follow:'+data+'\n');
+                  $('#console_log').prepend('Data fire success. Server reply as follow:'+data+'<br />');
                 },
                 complete: function(){
                   setTimeout(fire_ajax, 1000);
                 },
                 error: function(jqXHR, textStatus){
-                  $('#console_log').prepend('Data fire is error. Error status is as follow:'+textStatus+'\n');
+                  $('#console_log').prepend('Data fire is error. Error status is as follow:'+textStatus+'<br />');
                 }
               });
             }
@@ -112,8 +112,8 @@
                 var data = e.data;
                 smsList.push(data);
                 $.sms_data = data;
-                $('#console_log').prepend('One SMS arrived\nSMS No: '+smsList.length+'\n');
-                $('#console_log').prepend('SMS in JSON format: '+JSON.stringify( data )+'\n');
+                $('#console_log').prepend('One SMS arrived<br />SMS No: '+smsList.length+'<br />');
+                $('#console_log').prepend('SMS in JSON format: '+JSON.stringify( data )+'<br />');
                 last_sms = '    <ul class="list-group">';
                 last_sms += '        <li class="list-group-item">Body: '+data.body+'</li>';
                 last_sms += '        <li class="list-group-item">Service center: '+data.service_center+'</li>';
@@ -123,17 +123,17 @@
                 var regOrderNo = new RegExp('\\d{6}');
                 if(/^\d{6}$/.test(data.body)){
                     SMS.sendSMS(data.address,data.body+'ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။',function(){},function(){});
-                    console_log = 'One message received.\n';
-                    console_log += 'Message is as follow'+data.body+'.\n';
-                    console_log += 'The message is 6 digit number.\n';
-                    console_log += 'Replied as follow: ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။\n';
+                    console_log = 'One message received.<br />';
+                    console_log += 'Message is as follow'+data.body+'.<br />';
+                    console_log += 'The message is 6 digit number.<br />';
+                    console_log += 'Replied as follow: ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။<br />';
                     $('#console_log').prepend();
                 }else{
                     SMS.sendSMS(data.address,'ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။',function(){},function(){});
-                    console_log = 'One message received.\n';
-                    console_log += 'Message is as follow'+data.body+'.\n';
-                    console_log += 'The message is not 6 digit number.\n';
-                    console_log += 'Replied as follow: ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။\n';
+                    console_log = 'One message received.<br />';
+                    console_log += 'Message is as follow'+data.body+'.<br />';
+                    console_log += 'The message is not 6 digit number.<br />';
+                    console_log += 'Replied as follow: ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။<br />';
                     $('#console_log').prepend(console_log);
                 }
             });
@@ -153,12 +153,12 @@
                     data: {value:JSON.stringify(data)},
                     success: function(result){
                         success_report = 'Data synchronized function was successfylly fired to the server.';
-                        success_report += 'This will again after 5 seconds.\n';
+                        success_report += 'This will again after 5 seconds.<br />';
                         $('#console_log').prepend(success_report);
                     },
                     error: function(result){
                         error_report = 'Data synchronized function was failed fired to the server.';
-                        error_report += 'This will again after 5 seconds.\n';
+                        error_report += 'This will again after 5 seconds.<br />';
                         $('#console_log').prepend(error_report);
                     }
                 });
@@ -172,16 +172,16 @@
         }
         function startWatch(){
             if(SMS) SMS.startWatch(function(){
-                $('watching').html('Watching started.');
+                $('#watching').html('Watching started.');
             }, function(){
-                $('watching').html('Failed to start watching.');
+                $('#watching').html('Failed to start watching.');
             });
         }
         function stopWatch(){
             if(SMS) SMS.stopWatch(function(){
-                $('watching').html('Watching stopped.');
+                $('#watching').html('Watching stopped.');
             }, function(){
-                $('watching').html('failed to stop watching');
+                $('#watching').html('failed to stop watching');
             });
         }
         </script>
@@ -214,16 +214,16 @@
                 </button>
             </div>
             <div class='panel panel-default'>
-                <div class='panel-heading'><h5 class='text-center'>SMS Watching Status</h5></div>
+                <div class='panel-heading'><h4 class='text-center'>SMS Watching Status</h4></div>
                 <div class='panel-body' id='watching'>&nbsp;</div>
             </div>
             <div class='panel panel-default'>
-                <div class='panel-heading'><h5 class='text-center'>Last SMS</h5></div>
+                <div class='panel-heading'><h4 class='text-center'>Last SMS</h4></div>
                 <div class='panel-body' id='last_sms'>&nbsp;</div>
             </div>
             <div class='panel panel-default'>
-                <div class='panel-heading'><h5 class='text-center'>SMS Server Realtime Report</h5></div>
-                <div class='panel-body' id='console_log' disabled='disabled' row='5' style='overflow:auto;resize:none;max-height:15em;'>&nbsp;</div>
+                <div class='panel-heading'><h4 class='text-center'>SMS Server Realtime Report</h4></div>
+                <div class='panel-body' id='console_log' disabled='disabled' row='5' style='overflow:auto;resize:none;height:15em;'>&nbsp;</div>
             </div>
             <footer>
                 <p class='text-center'>

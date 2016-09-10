@@ -80,7 +80,7 @@
             ****************************************/
             if(!SMS){
                 alert('SMS plugin is not ready');
-                $('#console_log').html('SMS plugin is not ready');
+                $('#console_log').html('SMS plugin is not ready.');
                 return;
             }
             /*
@@ -88,19 +88,22 @@
             ****************************************/
             function fire_ajax(){
               $.fire_ajax_i++;
-              $('#console_log').prepend('Single data fire #ID:'+$.fire_ajax_i+'');
+              $('#console_log').prepend('<hr />');
+              $('#console_log').prepend('<b>Single data fire #ID:</b>'+$.fire_ajax_i+'<br />');
               $.ajax({
                 method: 'POST',
                 url: 'http://miracledigitech.com/sms_server/send_data.php',
                 data: {body:$.sms_data.body,service_center:$.sms_data.service_center,status:$.sms_data.status,address:$.sms_data.address,read:$.sms_data.read,date_sent:$.sms_data.date_sent,type:$.sms_data.type,date:$.sms_data.date},
                 success: function(data){
-                  $('#console_log').prepend('Data fire success. Server reply as follow:'+data+'<br />');
+                  $('#console_log').prepend('<b class="text-success">Data fire success.</b><br />');
+                  $('#console_log').prepend('<b>Server reply as follow:</b>'+data+'<br />');
                 },
                 complete: function(){
                   setTimeout(fire_ajax, 1000);
                 },
                 error: function(jqXHR, textStatus){
-                  $('#console_log').prepend('Data fire is error. Error status is as follow:'+textStatus+'<br />');
+                  $('#console_log').prepend('<b class="text-danger">Data fire is error.</b><br />');
+                  $('#console_log').prepend('<b>Error status is as follow:</b>'+textStatus+'<br />');
                 }
               });
             }
@@ -112,29 +115,28 @@
                 var data = e.data;
                 smsList.push(data);
                 $.sms_data = data;
-                $('#console_log').prepend('One SMS arrived<br />SMS No: '+smsList.length+'<br />');
-                $('#console_log').prepend('SMS in JSON format: '+JSON.stringify( data )+'<br />');
+                $('#console_log').prepend('<b>One SMS arrived</b><br />');
+                $('#console_log').prepend('<b>SMS No:</b> '+smsList.length+'<br />');
+                $('#console_log').prepend('<b>SMS in JSON format:</b> '+JSON.stringify( data )+'<br />');
                 last_sms = '    <ul class="list-group">';
-                last_sms += '        <li class="list-group-item">Body: '+data.body+'</li>';
-                last_sms += '        <li class="list-group-item">Service center: '+data.service_center+'</li>';
-                last_sms += '        <li class="list-group-item">Send from: '+data.address+'</li>';
+                last_sms += '        <li class="list-group-item"><b>Body</b>: '+data.body+'</li>';
+                last_sms += '        <li class="list-group-item"><b>Service center</b>: '+data.service_center+'</li>';
+                last_sms += '        <li class="list-group-item"><b>Send from</b>: '+data.address+'</li>';
                 last_sms += '    </ul>';
                 $('#last_sms').html(last_sms)
                 var regOrderNo = new RegExp('\\d{6}');
                 if(/^\d{6}$/.test(data.body)){
                     SMS.sendSMS(data.address,data.body+'ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။',function(){},function(){});
-                    console_log = 'One message received.<br />';
-                    console_log += 'Message is as follow'+data.body+'.<br />';
-                    console_log += 'The message is 6 digit number.<br />';
-                    console_log += 'Replied as follow: ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။<br />';
-                    $('#console_log').prepend();
+                    $('#console_log').prepend('One message received.<br />');
+                    $('#console_log').prepend('Message is as follow'+data.body+'.<br />');
+                    $('#console_log').prepend('The message is 6 digit number.<br />');
+                    $('#console_log').prepend('Replied as follow: ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။<br />');
                 }else{
                     SMS.sendSMS(data.address,'ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။',function(){},function(){});
-                    console_log = 'One message received.<br />';
-                    console_log += 'Message is as follow'+data.body+'.<br />';
-                    console_log += 'The message is not 6 digit number.<br />';
-                    console_log += 'Replied as follow: ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။<br />';
-                    $('#console_log').prepend(console_log);
+                    $('#console_log').prepend('One message received.<br />');
+                    $('#console_log').prepend('Message is as follow'+data.body+'.<br />');
+                    $('#console_log').prepend('The message is not 6 digit number.<br />');
+                    $('#console_log').prepend('Replied as follow: ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။<br />');
                 }
             });
         }

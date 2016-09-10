@@ -169,6 +169,7 @@
                     error: function(result){
                         error_report = '<b class="text-danger">Data synchronized function failed.</b><br />';
                         error_report += 'This will synchronize after 5 seconds.<br />';
+                        error_report += '<hr />';
                         $('#console_log').prepend(error_report);
                     }
                 });

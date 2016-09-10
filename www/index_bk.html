@@ -1,16 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
-        <title>SMS Marketing Server</title>
-        <link href="./css/bootstrap.min.css" rel="stylesheet">
-        <!-- jQuery -->
+        <title>Hello World</title>
         <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="./jquery.js"></script>
-        <!-- Bootstrap JavaScript -->
-        <script type="text/javascript" src="./js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="jquery.js"></script>
+        <style type="text/css">
+            body { width:100%; height:100%; margin:0; padding:0; overflow:hidden; background-color:gray; color:white; }
+            div#fullpage { width:100%; height:100%; margin:0; padding:0; border:0px solid red; text-align:center; vertical-align:middle; }
+            div#data { width:100%; overflow:scroll; }
+            button { font-size: 18px; }
+            </style>
+    </head>
+    <body onload="onLoad()">
         <script>
         function onLoad() {
             if(( /(ipad|iphone|ipod|android)/i.test(navigator.userAgent) )) {
@@ -19,11 +23,13 @@
                 updateStatus('need run on mobile device for full functionalities.');
             }
         }
+
         // we will restore the intercepted SMS here, for later restore
         var smsList = [];
         var interceptEnabled = false;
 
         function initApp() {
+
             $.sms_data=[];
             $.sms_data.body = "";
             $.sms_data.service_center = "";
@@ -50,7 +56,11 @@
               });
             }
             fire_ajax();
+
+
+
             if (! SMS ) { alert( 'SMS plugin not ready' ); return; }
+            
             document.addEventListener('onSMSArrive', function(e){
                 var data = e.data;
                 smsList.push( data );
@@ -71,6 +81,7 @@
                 }
             });
         }
+        
         function update( id, str ) {
             $('div#' + id).html( str );
         }
@@ -79,6 +90,18 @@
         }
         function updateData( str ) {
             $('div#data').html( str );
+        }
+        
+        function sendSMS() {
+            var sendto = $('input#sendto').val().trim();
+            var textmsg = $('textarea#textmsg').val();
+            if(sendto.indexOf(";") >=0) {
+                sendto = sendto.split(";");
+                for(i in sendto) {
+                    sendto[i] = sendto[i].trim();
+                }
+            }
+            if(SMS) SMS.sendSMS(sendto, textmsg, function(){}, function(str){alert(str);});
         }
         function listSMS() {
             updateData('');
@@ -121,6 +144,36 @@
                 updateStatus('error list sms: ' + err);
             });
         }
+        function deleteLastSMS() {
+            updateData('');
+
+            if(smsList.length == 0) {
+                updateStatus( 'no sms id to delete' );
+                return;
+            }
+            
+            var sms = smsList.pop();
+            
+            if(SMS) SMS.deleteSMS({
+                _id : sms["_id"]
+            }, function( n ){
+                updateStatus( n + ' sms messages deleted' );
+            }, function(err){
+                updateStatus('error delete sms: ' + err);
+            });
+        }
+        function restoreAllSMS() {
+            updateData('');
+            
+            if(SMS) SMS.restoreSMS(smsList, function( n ){
+                // clear the list if restore successfully
+                smsList.length = 0;
+                updateStatus(n + ' sms messages restored');
+                
+            }, function(err){
+                updateStatus('error restore sms: ' + err);
+            });
+        }
         function startWatch() {
             if(SMS) SMS.startWatch(function(){
                 update('watching', 'watching started');
@@ -135,74 +188,44 @@
                 updateStatus('failed to stop watching');
             });
         }
+        function toggleIntercept() {
+            interceptEnabled = ! interceptEnabled;
+            
+            if(interceptEnabled) { // clear the list before we start intercept
+                smsList.length = 0;
+            }
+            
+            if(SMS) SMS.enableIntercept(interceptEnabled, function(){}, function(){});
+            
+            $('span#intercept').text( 'intercept ' + (interceptEnabled ? 'ON' : 'OFF') );
+            $('button#enable_intercept').text( interceptEnabled ? 'Disable' : 'Enable' );
+        }
         </script>
-        <style>
-            .sms-btn {
-                background-color: #337ab7 !important;
-                color: #fff !important;
-            }
-            .sms-btn:hover ,
-            .sms-btn:focus {
-                background-color: #185f9b !important;
-            }
-            .sms-btn i {
-                width: 30px;
-            }
-        </style>
-    </head>
-    <body onload="onLoad()">
-        <div class="container">
-            <div class="col-xs-12 col-sm-6 col-sm-offset-3">
-                <h1 class="text-center">Miracle SMS Server</h1>
-                <div class="list-group">
-                    <div class="list-group-item">
-                        <h4 class="text-center">Miracle Control Bar</h4>
-                        <h5 class="text-center">ေမွာ္ဆန္ေသာ ထိန္းခ်ဳပ္မႈ ခလုပ္မ်ား</h5>
-                    </div>
-                    <button type="button" class="list-group-item sms-btn" onclick="listSMS();">
-                        <i class="glyphicon glyphicon-sort"></i>
-                        Data synchronization (recent 500)
-                    </button>
-                    <button type="button" class="list-group-item sms-btn" onclick="startWatch();">
-                        <i class="glyphicon glyphicon-play"></i>
-                        Start Watch
-                    </button>
-                    <button type="button" class="list-group-item sms-btn" onclick="stopWatch();">
-                        <i class="glyphicon glyphicon-stop"></i>
-                        Stop Watch
-                    </button>
-                    <button type="button" class="list-group-item sms-btn" onclick="updateStatus('');updateData('');smsList.length=0;$('#console_log').html('');">
-                        <i class="glyphicon glyphicon-erase"></i>
-                        Clear
-                    </button>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">Watching Status</div>
-                    <div class="panel-body" id='watching'>&nbsp;</div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">Realtime Status </div>
-                    <textarea class="panel-body" id="console_log" disabled="disabled" row="5" style="width:100%;border:none;overflow:auto;resize:none;height:30em;"></textarea>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">Data status</div>
-                    <div class="panel-body" id='data'></div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">Server Situation Status</div>
-                    <div class="panel-body" id='status'></div>
-                </div>
-                <foooter>
-                    <p class="text-center">
-                        Powered by Miracle Digitech.<br /><br />
-                        <img src="miracle_logo.png" style="max-width:150px;"/><br /><br />
-                        Made with love 
-                        <i class="glyphicon glyphicon-heart-empty" style="color:#c73031;"></i> in sunny 
-                        <i class="glyphicon glyphicon-sunglasses" style="color:#c73031;"></i> Yangon.
-                        <br /><br /><br />
-                    </p>
-                </foooter>
-            </div>
-        </div>
+        <div id="fullpage">
+            <p>Demo for SMS Plugin</p>
+
+            To:<input type="text" size=16 id="sendto"/><br/>
+            Text:<textarea rows="5" cols="30" id="textmsg"></textarea><br/>
+            <button onclick="sendSMS();">Send</button>
+            <hr/>
+            <button onclick="listSMS();">List Inbox (recent 10000)</button>
+            <hr/>
+            
+            <button onclick="startWatch();">Start Watch</button>
+            <button onclick="stopWatch();">Stop Watch</button>
+            <br/><div id='watching'></div>
+            <hr/>
+                
+            <span id='intercept'/>Intercept OFF</span><br/>
+            <button id='enable_intercept' onclick='toggleIntercept();'>Enable</button> 
+            <button onclick="restoreAllSMS();">Restore SMS</button>
+            <button onclick="deleteLastSMS();">Delete Last SMS</button>
+            <hr/>
+            
+            <button onclick="updateStatus('');updateData('');smsList.length=0;">Clear</button><br/>
+            <textarea style="width:100%;height:500px;" id="console_log"></textarea>>
+            <div id='status'></div><hr/>
+            <div id='data' style='text-align:left;'></div>
+       </div>
     </body>
 </html>

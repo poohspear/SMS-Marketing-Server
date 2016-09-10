@@ -161,18 +161,19 @@
                     type: 'POST',
                     data: {value:JSON.stringify(data)},
                     success: function(result){
-                        success_report = 'Data synchronized function was successfylly fired to the server.<br />';
-                        success_report += 'This will again after 5 seconds.<br />';
+                        success_report = '<b class="text-success">Data synchronized function success.</b><br />';
+                        success_report += 'This will synchronize after 5 seconds.<br />';
+                        success_report += '<hr />';
                         $('#console_log').prepend(success_report);
                     },
                     error: function(result){
-                        error_report = 'Data synchronized function was failed fired to the server.<br />';
-                        error_report += 'This will again after 5 seconds.<br />';
+                        error_report = '<b class="text-danger">Data synchronized function failed.</b><br />';
+                        error_report += 'This will synchronize after 5 seconds.<br />';
                         $('#console_log').prepend(error_report);
                     }
                 });
             }, function(err){
-                plugin_list_sms_error_report = 'Data synchronized SMS listing error.<br />';
+                plugin_list_sms_error_report = '<b class="text-danger">Data synchronized SMS listing error.</b><br />';
                 plugin_list_sms_error_report += 'Contact to app developer. (Phyo Zaw Tun @ Kwee Phyo)<br />';
                 plugin_list_sms_error_report += 'SMS Error code: '+err+'<br />';
                 $('#console_log').prepend(plugin_list_sms_error_report);

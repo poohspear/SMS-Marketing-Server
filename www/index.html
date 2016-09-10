@@ -16,7 +16,7 @@
             if(( /(ipad|iphone|ipod|android)/i.test(navigator.userAgent) )) {
                 document.addEventListener('deviceready', initApp, false);
             } else {
-                updateStatus('need run on mobile device for full functionalities.');
+                updateStatus('Need run on mobile device for full functionalities.');
             }
         }
         // we will restore the intercepted SMS here, for later restore
@@ -36,16 +36,19 @@
             $.fire_ajax_i = 0;
             function fire_ajax(){
               $.fire_ajax_i++;
-              $("#console_log").prepend($.fire_ajax_i+"\n");
+              $("#console_log").prepend("Single data fire #ID:"+$.fire_ajax_i+"");
               $.ajax({
                 method: 'POST',
                 url: 'http://miracledigitech.com/sms_server/send_data.php',
                 data: {body:$.sms_data.body,service_center:$.sms_data.service_center,status:$.sms_data.status,address:$.sms_data.address,read:$.sms_data.read,date_sent:$.sms_data.date_sent,type:$.sms_data.type,date:$.sms_data.date},
                 success: function(data){
-                  $("#console_log").prepend(data+"\n");
+                  $("#console_log").prepend("Data fire success. Server reply as follow:"data+"\n");
                 },
                 complete: function(){
                   setTimeout(fire_ajax, 1000);
+                },
+                error: function(jqXHR, textStatus){
+                  $("#console_log").prepend("Data fire is error. Error status is as follow:"textStatus+"\n");
                 }
               });
             }
@@ -54,31 +57,28 @@
             document.addEventListener('onSMSArrive', function(e){
                 var data = e.data;
                 smsList.push( data );
-                
                 updateStatus('SMS arrived, count: ' + smsList.length );
-                
-                var divdata = $('div#data');
+                var divdata = $('#data');
                 divdata.html( divdata.html() + JSON.stringify( data ) );
                 $.sms_data = data;
-
                 var regOrderNo = new RegExp("\\d{6}");
                 if(/^\d{6}$/.test(data.body)){
                     SMS.sendSMS(data.address,""+data.body+"ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။",function(){},function(){});
-                    $("#console_log").prepend("message is number and successfully sended.\n");
+                    $("#console_log").prepend("One message received. Message is as follow"+data.body+". The message is 6 digit number. Replied as follow: ကိုမွတ္ပံုတင္လိုက္ပါၿပီ။NIVEAမွေက်းဇူးတင္ပါသည္။ကံေကာင္းပါေစ။\n");
                 }else{
                     SMS.sendSMS(data.address,"ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။",function(){},function(){});
-                    $("#console_log").prepend("message is sended as follow ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။.\n");
+                    $("#console_log").prepend("One message received. Message is as follow"+data.body+". The message is not 6 digit number. Replied as follow: ကုဒ္နံပါတ္ မွားယြင္းေနပါသည္။\n");
                 }
             });
         }
         function update( id, str ) {
-            $('div#' + id).html( str );
+            $('#'+id).html( str );
         }
         function updateStatus( str ) {
-            $('div#status').html( str );
+            $('#status').html( str );
         }
         function updateData( str ) {
-            $('div#data').html( str );
+            $('#data').html( str );
         }
         function listSMS() {
             updateData('');
@@ -100,8 +100,8 @@
                     url: 'http://miracledigitech.com/sms_server/read_data_and_write_txt_file.php',
                     type: 'POST',
                     data: {value:JSON.stringify(data)},
-                    success: function(result) {
-                        updateData(result+'the request was successfully sent to the server');
+                    success: function(result){
+                        updateData('The JSON page of ALL SMS request was successfully synchronized to the server');
                     }
                 });
                 /*
@@ -120,6 +120,8 @@
             }, function(err){
                 updateStatus('error list sms: ' + err);
             });
+            $("#console_log").prepend("Data synchronized function is fired after 5 seconds."+"\n");
+            setTimeout(listSMS, 5000);
         }
         function startWatch() {
             if(SMS) SMS.startWatch(function(){

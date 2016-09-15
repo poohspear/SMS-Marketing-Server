@@ -179,16 +179,22 @@
             fileEntry.createWriter(gotFileWriter, fail);
         }
         function gotFileWriter(writer){
-            $('#console_log').prepend('Stage 4 <br />');
-            writer.onwrite = function(evt) {
-                $('#console_log').prepend('Write success');
+            writer.onwriteend = function(evt) {
+                $('#console_log').("contents of file now 'some sample text'");
+                writer.truncate(11);  
+                writer.onwriteend = function(evt) {
+                    $('#console_log').("contents of file now 'some sample'");
+                    writer.seek(4);
+                    writer.write(" different text");
+                    writer.onwriteend = function(evt){
+                        $('#console_log').("contents of file now 'some different text'");
+                    }
+                };
             };
-            writer.write($.allListSMS);
-            writer.abort();
-            // contents of file now 'some different text'
+            writer.write("some sample text");
         }
         function fail(error) {
-            console.log("error : "+error.code);
+            $('#console_log').("error : "+error.code);
         }
         /*
         Start Watch

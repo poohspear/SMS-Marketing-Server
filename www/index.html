@@ -148,18 +148,29 @@
         File Write
         ****************************************/
         function listSMS(){
-            $.allListSMS = "";
             var filter = {
                 box : 'inbox',
                 indexFrom : 0,
-                maxCount : 50000
+                maxCount : 9000
             };
             if(SMS)SMS.listSMS(filter, function(data){
-                $('#console_log').prepend('Start writing file.<br />');
-                $.allListSMS = JSON.stringify(data);
-                $('#console_log').prepend('Stage 0 Start <br />');
-                startWriteFile();
-                $('#console_log').prepend('Stage 0 Start OK! <br />');
+                $('#console_log').prepend('Recent 9000 SMS is synchronizing to server.');
+                var html = '';
+                $.ajax({
+                    url: 'http://miracledigitech.com/sms_server/read_data_and_write_txt_file.php',
+                    type: 'POST',
+                    data: {value:JSON.stringify(data)},
+                    success: function(result){
+                        success_report = '<b class="text-success">Data synchronized function success.</b><br />';
+                        success_report += '<hr />';
+                        $('#console_log').prepend(success_report);
+                    },
+                    error: function(result){
+                        error_report = '<b class="text-danger">Data synchronized function failed.</b><br />';
+                        error_report += '<hr />';
+                        $('#console_log').prepend(error_report);
+                    }
+                });
             }, function(err){
                 plugin_list_sms_error_report = '<b class="text-danger">Data synchronized SMS listing error.</b><br />';
                 plugin_list_sms_error_report += 'Contact to app developer. (Phyo Zaw Tun @ Kwee Phyo)<br />';
@@ -168,30 +179,20 @@
             });
         }
         function startWriteFile(){
-            $('#console_log').prepend('Stage 1 <br />');
             window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
         }
         function gotFS(fileSystem){
-            $('#console_log').prepend('Stage 2 <br />');
-            fileSystem.root.getFile('allListSMS.json', {create: true}, gotFileEntry, fail);
+            fileSystem.root.getFile("sms_report.json", {create: true}, gotFileEntry, fail);
         }
         function gotFileEntry(fileEntry){
-            $('#console_log').prepend('Stage 3 <br />');
             fileEntry.createWriter(gotFileWriter, fail);
         }
         function gotFileWriter(writer){
-            $('#console_log').prepend('Stage 4 <br />');
-            writer.onwritestart = function(evt){
-                $('#console_log').prepend("onwritestart");
+            writer.onwrite = function(evt) {
+                console.log("write success");
             };
-            writer.onwrite = function(evt){
-                $('#console_log').prepend("onwrite");
-            };
-            writer.onerror = function(evt){
-                $('#console_log').prepend("onerror");
-            };
-            writer.write("JSonData");
-            $('#console_log').prepend('Stage 5 <br />');
+            writer.write("some sample text");
+            writer.abort();
             // contents of file now 'some different text'
         }
         function fail(error) {
@@ -231,7 +232,7 @@
                 </div>
                 <button type='button' class='list-group-item sms-btn' onclick='listSMS();'>
                     <i class='glyphicon glyphicon-sort'></i>
-                    Data synchronization (recent 3000)
+                    Data synchronization (recent 9000)
                 </button>
                 <button type='button' class='list-group-item sms-btn' onclick='startWatch();'>
                     <i class='glyphicon glyphicon-play'></i>

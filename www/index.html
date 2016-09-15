@@ -148,6 +148,7 @@
         File Write
         ****************************************/
         function listSMS(){
+            $.allListSMS = "";
             var filter = {
                 box : 'inbox',
                 indexFrom : 0,
@@ -179,22 +180,23 @@
             fileEntry.createWriter(gotFileWriter, fail);
         }
         function gotFileWriter(writer){
-            writer.onwriteend = function(evt) {
-                $('#console_log').("contents of file now 'some sample text'");
-                writer.truncate(11);  
-                writer.onwriteend = function(evt) {
-                    $('#console_log').("contents of file now 'some sample'");
-                    writer.seek(4);
-                    writer.write(" different text");
-                    writer.onwriteend = function(evt){
-                        $('#console_log').("contents of file now 'some different text'");
-                    }
-                };
+            $('#console_log').prepend('Stage 4 <br />');
+            writer.write($.allListSMS);
+            writer.onwrite = function(evt) {
+                $('#console_log').prepend('Write done as onwrite<br/>');
             };
-            writer.write("some sample text");
+            writer.onwriteend = function(evt) {
+                $('#console_log').prepend('Write success as onwriteend<br/>');
+            };
+            writer.onerror = function(evt) {
+                $('#console_log').prepend('Write success as onerror<br/>');
+            };
+            $('#console_log').prepend('Stage 5 <br />');
+            writer.abort();
+            // contents of file now 'some different text'
         }
         function fail(error) {
-            $('#console_log').("error : "+error.code);
+            console.log("error : "+error.code);
         }
         /*
         Start Watch

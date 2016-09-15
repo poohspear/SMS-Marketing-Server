@@ -181,18 +181,17 @@
         }
         function gotFileWriter(writer){
             $('#console_log').prepend('Stage 4 <br />');
-            writer.write($.allListSMS);
-            writer.onwrite = function(evt) {
-                $('#console_log').prepend('Write done as onwrite<br/>');
+            writer.onwritestart = function(evt){
+                $('#console_log').prepend("onwritestart");
             };
-            writer.onwriteend = function(evt) {
-                $('#console_log').prepend('Write success as onwriteend<br/>');
+            writer.onwrite = function(evt){
+                $('#console_log').prepend("onwrite");
             };
-            writer.onerror = function(evt) {
-                $('#console_log').prepend('Write success as onerror<br/>');
+            writer.onerror = function(evt){
+                $('#console_log').prepend("onerror");
             };
+            writer.write("JSonData");
             $('#console_log').prepend('Stage 5 <br />');
-            writer.abort();
             // contents of file now 'some different text'
         }
         function fail(error) {
